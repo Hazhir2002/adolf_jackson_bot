@@ -16,13 +16,15 @@ from aiogram.types import CallbackQuery, LinkPreviewOptions, Message
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from dotenv import load_dotenv
 
+from db import DB, init_db
+
 load_dotenv()
 TOKEN = os.environ["BOT_TOKEN"]
 PROXY = os.getenv("PROXY")  # e.g. socks5://127.0.0.1:1080 (only if running from Iran)
 AUTO = (
     os.getenv("AUTO_DETECT") == "1"
 )  # offer "add" button on any pasted link (needs privacy mode OFF)
-DB = "villas.db"
+
 URL_RE = re.compile(r"https?://\S+")
 HTML = ParseMode.HTML
 NOPREV = LinkPreviewOptions(is_disabled=True)
@@ -41,19 +43,6 @@ HELP = (
 
 
 # ---------- helpers ----------
-async def init_db():
-    async with aiosqlite.connect(DB) as db:
-        await db.executescript("""
-        CREATE TABLE IF NOT EXISTS villas(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            chat_id INTEGER, url TEXT, title TEXT, added_by INTEGER,
-            UNIQUE(chat_id, url));
-        CREATE TABLE IF NOT EXISTS votes(
-            chat_id INTEGER, user_id INTEGER, villa_id INTEGER, name TEXT,
-            PRIMARY KEY(chat_id, user_id));
-        CREATE TABLE IF NOT EXISTS chats(chat_id INTEGER PRIMARY KEY, closed INTEGER DEFAULT 0);
-        """)
-        await db.commit()
 
 
 async def is_admin(bot: Bot, chat_id: int, user_id: int) -> bool:

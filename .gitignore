@@ -1,2 +1,4 @@
 .env
 villas.db
+uv.lock
+__pycache__
