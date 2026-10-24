@@ -1,4 +1,4 @@
 .env
-villas.db
+# villas.db
 uv.lock
 __pycache__
